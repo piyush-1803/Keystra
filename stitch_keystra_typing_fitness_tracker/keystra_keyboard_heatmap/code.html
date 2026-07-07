@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Keystra | Keyboard Heatmap</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Geist:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container": "#201f20",
+                    "surface-tint": "#c2c1ff",
+                    "secondary-container": "#00a572",
+                    "primary": "#c2c1ff",
+                    "secondary-fixed": "#6ffbbe",
+                    "surface-variant": "#353436",
+                    "surface-container-high": "#2a2a2b",
+                    "surface-container-highest": "#353436",
+                    "inverse-primary": "#4f4ccd",
+                    "error-container": "#93000a",
+                    "primary-fixed-dim": "#c2c1ff",
+                    "surface-dim": "#131314",
+                    "on-primary-fixed": "#0c006a",
+                    "on-error-container": "#ffdad6",
+                    "on-tertiary-fixed": "#2a1700",
+                    "surface-container-low": "#1c1b1c",
+                    "surface": "#131314",
+                    "tertiary-fixed-dim": "#ffb95f",
+                    "primary-container": "#5856d6",
+                    "on-surface-variant": "#c7c4d6",
+                    "on-primary-fixed-variant": "#3631b4",
+                    "on-error": "#690005",
+                    "secondary": "#4edea3",
+                    "background": "#131314",
+                    "outline-variant": "#464554",
+                    "error": "#ffb4ab",
+                    "on-primary": "#1c0b9f",
+                    "on-tertiary": "#472a00",
+                    "surface-bright": "#39393a",
+                    "surface-container-lowest": "#0e0e0f",
+                    "on-primary-container": "#e7e4ff",
+                    "outline": "#918f9f",
+                    "on-secondary-fixed-variant": "#005236",
+                    "on-secondary": "#003824",
+                    "primary-fixed": "#e2dfff",
+                    "on-tertiary-container": "#ffe1c2",
+                    "on-surface": "#e5e2e3",
+                    "tertiary": "#ffb95f",
+                    "inverse-on-surface": "#313031",
+                    "secondary-fixed-dim": "#4edea3",
+                    "on-tertiary-fixed-variant": "#653e00",
+                    "on-secondary-fixed": "#002113",
+                    "on-background": "#e5e2e3",
+                    "inverse-surface": "#e5e2e3",
+                    "on-secondary-container": "#00311f",
+                    "tertiary-fixed": "#ffddb8",
+                    "tertiary-container": "#915b00"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-gap": "12px",
+                    "section-gap": "40px",
+                    "grid-gutter": "20px",
+                    "unit": "4px",
+                    "container-padding": "24px",
+                    "grid-columns": "12"
+            },
+            "fontFamily": {
+                    "label-xs": ["Inter"],
+                    "display-metrics": ["Geist"],
+                    "headline-md": ["Geist"],
+                    "data-mono": ["JetBrains Mono"],
+                    "body-sm": ["Inter"],
+                    "headline-lg": ["Geist"],
+                    "body-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "label-xs": ["11px", {"lineHeight": "16px", "fontWeight": "600"}],
+                    "display-metrics": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "data-mono": ["14px", {"lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #131314;
+            color: #e5e2e3;
+            overflow-x: hidden;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-card {
+            background: rgba(32, 31, 32, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .key-glow {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .key-glow:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.2) drop-shadow(0 0 12px currentColor);
+        }
+        @keyframes pulse-soft {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+        .animate-pulse-soft {
+            animation: pulse-soft 3s infinite ease-in-out;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #131314;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #353436;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="font-body-lg text-body-lg selection:bg-primary/30">
+<!-- Side Navigation Shell -->
+<aside class="fixed left-0 h-full w-[240px] border-r border-white/10 bg-surface/70 backdrop-blur-xl flex flex-col py-spacing-container-padding z-50 shadow-2xl">
+<div class="px-6 mb-8">
+<h1 class="font-headline-lg text-headline-lg font-bold text-on-surface">Keystra</h1>
+<p class="text-label-xs font-label-xs text-primary uppercase tracking-widest mt-1 opacity-80 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">lock</span> Local-only
+            </p>
+</div>
+<nav class="flex-grow space-y-1 px-3">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant font-medium hover:bg-surface-variant/50 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body-sm text-body-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant font-medium hover:bg-surface-variant/50 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-body-sm text-body-sm">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-primary font-bold border-l-2 border-primary bg-primary/10" href="#">
+<span class="material-symbols-outlined" data-icon="keyboard">keyboard</span>
+<span class="font-body-sm text-body-sm">Heatmap</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant font-medium hover:bg-surface-variant/50 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span class="font-body-sm text-body-sm">AI Coach</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant font-medium hover:bg-surface-variant/50 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="conveyor_belt">conveyor_belt</span>
+<span class="font-body-sm text-body-sm">Onboarding</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant font-medium hover:bg-surface-variant/50 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body-sm text-body-sm">Settings</span>
+</a>
+</nav>
+<div class="px-3 mt-auto space-y-1">
+<button class="w-full bg-primary-container text-on-primary-container py-2.5 rounded-lg font-bold transition-transform active:scale-95 mb-4">
+                Start Session
+            </button>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant font-medium hover:bg-surface-variant/50 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-body-sm text-body-sm">Support</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant font-medium hover:bg-surface-variant/50 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="font-body-sm text-body-sm">Notifications</span>
+</a>
+</div>
+</aside>
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 right-0 left-[240px] h-16 border-b border-white/10 bg-surface/70 backdrop-blur-xl flex justify-between items-center px-grid-gutter z-40">
+<div class="flex items-center gap-6">
+<nav class="flex gap-6">
+<a class="font-headline-md text-headline-md text-primary border-b-2 border-primary pb-1" href="#">Overview</a>
+<a class="font-headline-md text-headline-md text-on-surface-variant hover:text-primary transition-colors" href="#">History</a>
+<a class="font-headline-md text-headline-md text-on-surface-variant hover:text-primary transition-colors" href="#">Export</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="bg-surface-variant/50 px-3 py-1.5 rounded-full flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm font-body-sm w-32" placeholder="Search data..." type="text"/>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="h-8 w-[1px] bg-white/10 mx-2"></div>
+<button class="bg-primary/10 border border-primary/20 text-primary font-bold px-4 py-1.5 rounded-full text-body-sm hover:bg-primary hover:text-on-primary transition-all">
+                Go Pro
+            </button>
+<img class="w-8 h-8 rounded-full border border-primary/30 object-cover" data-alt="A sharp, minimalist professional headshot of a user with soft, directional lighting against a dark, tech-inspired background. The image has a high-end, editorial feel with cool blue and deep charcoal tones that align with the premium glassmorphic UI of the Keystra application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCl2KiM6p0YRvr8cLSFII7MkpZsJtub4VCK3KK_nhYAURzvzt3ZF_LKlfOKEgbmRigr-yAh7_Q2lHk43RUQC1KL3UmC4RCxitE0qFpKcDLr-dq3Iz0gMiwrack3MFiGIqoYwgRfxMSCOHvNiiIS3sLQf5DaKcd8U63I7xS7WcqA6GColJCqObg1COLyuCKvZ4DXN_twSB7plICvBm3AdydzWM-ZwhsxKrziLvPuVKTlhVL9tUmPrxCQrF8XzSFJXQm5MCUjBdpGu-A"/>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-[240px] pt-24 px-grid-gutter pb-12">
+<div class="max-w-7xl mx-auto space-y-grid-gutter">
+<!-- Header Section with Toggles -->
+<div class="flex justify-between items-end">
+<div>
+<h2 class="font-headline-lg text-headline-lg mb-1">Keyboard Heatmap</h2>
+<p class="text-on-surface-variant font-body-sm">Visualizing performance across 42,890 keystrokes over the last 7 days.</p>
+</div>
+<div class="flex bg-surface-container rounded-xl p-1 border border-white/5">
+<button class="px-4 py-2 rounded-lg text-label-xs font-label-xs bg-primary text-on-primary shadow-lg transition-all" id="freqToggle">Frequency</button>
+<button class="px-4 py-2 rounded-lg text-label-xs font-label-xs text-on-surface-variant hover:text-on-surface transition-all" id="latToggle">Latency</button>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-grid-gutter">
+<!-- Main Keyboard Heatmap -->
+<div class="col-span-12 lg:col-span-9 space-y-grid-gutter">
+<div class="glass-card rounded-2xl p-8 flex flex-col items-center overflow-x-auto">
+<!-- Legend -->
+<div class="w-full flex justify-end gap-4 mb-8">
+<div class="flex items-center gap-2">
+<span class="text-label-xs text-on-surface-variant">Low Activity</span>
+<div class="flex h-2 w-32 rounded-full overflow-hidden bg-surface-variant">
+<div class="h-full w-1/4 bg-blue-500/20"></div>
+<div class="h-full w-1/4 bg-blue-500/60"></div>
+<div class="h-full w-1/4 bg-primary/80"></div>
+<div class="h-full w-1/4 bg-primary"></div>
+</div>
+<span class="text-label-xs text-primary">Peak Usage</span>
+</div>
+</div>
+<!-- Virtual Keyboard -->
+<div class="space-y-2 select-none w-full max-w-[900px]">
+<!-- Row 1 -->
+<div class="flex gap-2 justify-center">
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-surface-variant/30 text-on-surface/40">`</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-blue-500/20 text-on-surface/60">1</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-blue-500/30 text-on-surface/70">2</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-blue-500/40 text-on-surface">3</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-primary/40 text-on-surface font-bold">4</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-primary/60 text-on-surface font-bold">5</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-primary/30 text-on-surface">6</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-blue-500/20 text-on-surface">7</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-blue-500/10 text-on-surface">8</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-surface-variant/30 text-on-surface/40">9</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-surface-variant/30 text-on-surface/40">0</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-surface-variant/30 text-on-surface/40">-</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-surface-variant/30 text-on-surface/40">=</div>
+<div class="key-glow w-20 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-blue-500/40 text-on-surface">Backspace</div>
+</div>
+<!-- Row 2 -->
+<div class="flex gap-2 justify-center">
+<div class="key-glow w-14 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-blue-500/30 text-on-surface">Tab</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-primary text-on-primary font-bold shadow-[0_0_15px_rgba(194,193,255,0.4)]">Q</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-primary/90 text-on-surface font-bold">W</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-primary text-on-primary font-bold shadow-[0_0_15px_rgba(194,193,255,0.4)]">E</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-primary/80 text-on-surface font-bold">R</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-primary/70 text-on-surface font-bold">T</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-primary/50 text-on-surface">Y</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-primary/60 text-on-surface">U</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-primary/80 text-on-surface font-bold">I</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-primary/70 text-on-surface">O</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-blue-500/40 text-on-surface">P</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-surface-variant/30 text-on-surface/40">[</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-surface-variant/30 text-on-surface/40">]</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-surface-variant/30 text-on-surface/40">\</div>
+</div>
+<!-- Row 3 -->
+<div class="flex gap-2 justify-center">
+<div class="key-glow w-16 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-blue-500/20 text-on-surface">Caps</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-primary/90 text-on-surface font-bold">A</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-primary/80 text-on-surface font-bold">S</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-primary text-on-primary font-bold shadow-[0_0_15px_rgba(194,193,255,0.4)]">D</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-primary/70 text-on-surface font-bold">F</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-primary/60 text-on-surface">G</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-primary/60 text-on-surface">H</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-blue-500/50 text-on-surface">J</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-blue-500/40 text-on-surface">K</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-primary/60 text-on-surface">L</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-surface-variant/30 text-on-surface/40">;</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-surface-variant/30 text-on-surface/40">'</div>
+<div class="key-glow w-20 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-primary/60 text-on-surface">Enter</div>
+</div>
+<!-- Row 4 -->
+<div class="flex gap-2 justify-center">
+<div class="key-glow w-24 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-primary/50 text-on-surface">Shift</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-blue-500/40 text-on-surface">Z</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-blue-500/30 text-on-surface">X</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-blue-500/60 text-on-surface">C</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-blue-500/40 text-on-surface">V</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-blue-500/30 text-on-surface">B</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-primary/60 text-on-surface font-bold">N</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-primary/50 text-on-surface">M</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-surface-variant/30 text-on-surface/40">,</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-surface-variant/30 text-on-surface/40">.</div>
+<div class="key-glow w-10 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-surface-variant/30 text-on-surface/40">/</div>
+<div class="key-glow w-24 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-blue-500/20 text-on-surface">Shift</div>
+</div>
+<!-- Row 5 -->
+<div class="flex gap-2 justify-center">
+<div class="key-glow w-12 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-surface-variant/30 text-on-surface/40">Ctrl</div>
+<div class="key-glow w-12 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-surface-variant/30 text-on-surface/40">Alt</div>
+<div class="key-glow w-12 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-surface-variant/30 text-on-surface/40">Cmd</div>
+<div class="key-glow w-64 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-primary text-on-primary font-bold shadow-[0_0_20px_rgba(194,193,255,0.5)] animate-pulse-soft">Space</div>
+<div class="key-glow w-12 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-surface-variant/30 text-on-surface/40">Cmd</div>
+<div class="key-glow w-12 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-surface-variant/30 text-on-surface/40">Alt</div>
+<div class="key-glow w-12 h-10 rounded-lg flex items-center justify-center font-data-mono text-xs border border-white/10 bg-surface-variant/30 text-on-surface/40">Ctrl</div>
+</div>
+</div>
+</div>
+<!-- Finger Load Distribution -->
+<div class="grid grid-cols-2 gap-grid-gutter">
+<div class="glass-card rounded-2xl p-6">
+<h3 class="font-headline-md text-headline-md mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="front_hand">front_hand</span>
+                                Left Hand Load
+                            </h3>
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-on-surface-variant">Pinky</span>
+<div class="w-2/3 bg-surface-variant h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[12%]"></div>
+</div>
+<span class="font-data-mono text-xs text-primary">12%</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-on-surface-variant">Ring</span>
+<div class="w-2/3 bg-surface-variant h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[18%]"></div>
+</div>
+<span class="font-data-mono text-xs text-primary">18%</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-on-surface-variant">Middle</span>
+<div class="w-2/3 bg-surface-variant h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[25%]"></div>
+</div>
+<span class="font-data-mono text-xs text-primary">25%</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-on-surface-variant">Index</span>
+<div class="w-2/3 bg-surface-variant h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[35%]"></div>
+</div>
+<span class="font-data-mono text-xs text-primary">35%</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-on-surface-variant">Thumb</span>
+<div class="w-2/3 bg-surface-variant h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[10%]"></div>
+</div>
+<span class="font-data-mono text-xs text-primary">10%</span>
+</div>
+</div>
+</div>
+<div class="glass-card rounded-2xl p-6">
+<h3 class="font-headline-md text-headline-md mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary" data-icon="front_hand" style="transform: scaleX(-1);">front_hand</span>
+                                Right Hand Load
+                            </h3>
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-on-surface-variant">Thumb</span>
+<div class="w-2/3 bg-surface-variant h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full w-[52%]"></div>
+</div>
+<span class="font-data-mono text-xs text-secondary">52%</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-on-surface-variant">Index</span>
+<div class="w-2/3 bg-surface-variant h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full w-[22%]"></div>
+</div>
+<span class="font-data-mono text-xs text-secondary">22%</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-on-surface-variant">Middle</span>
+<div class="w-2/3 bg-surface-variant h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full w-[14%]"></div>
+</div>
+<span class="font-data-mono text-xs text-secondary">14%</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-on-surface-variant">Ring</span>
+<div class="w-2/3 bg-surface-variant h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full w-[8%]"></div>
+</div>
+<span class="font-data-mono text-xs text-secondary">8%</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-on-surface-variant">Pinky</span>
+<div class="w-2/3 bg-surface-variant h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full w-[4%]"></div>
+</div>
+<span class="font-data-mono text-xs text-secondary">4%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Sidebar Stats & Insights -->
+<div class="col-span-12 lg:col-span-3 space-y-grid-gutter">
+<!-- Selected Key Stats -->
+<div class="glass-card rounded-2xl p-6">
+<div class="flex justify-between items-start mb-6">
+<h3 class="font-headline-md text-headline-md">Key Focus</h3>
+<div class="w-10 h-10 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center font-data-mono text-primary font-bold">E</div>
+</div>
+<div class="space-y-6">
+<div>
+<p class="text-label-xs text-on-surface-variant uppercase mb-1">Average Latency</p>
+<div class="flex items-end gap-2">
+<span class="font-display-metrics text-[32px] text-on-surface">82</span>
+<span class="text-label-xs text-on-surface-variant mb-2">ms</span>
+<span class="text-secondary text-label-xs mb-2 ml-auto">↓ 4.2%</span>
+</div>
+</div>
+<div class="h-[1px] bg-white/5 w-full"></div>
+<div>
+<p class="text-label-xs text-on-surface-variant uppercase mb-1">Accuracy Rate</p>
+<div class="flex items-end gap-2">
+<span class="font-display-metrics text-[32px] text-on-surface">98.4</span>
+<span class="text-label-xs text-on-surface-variant mb-2">%</span>
+</div>
+</div>
+<div class="h-[1px] bg-white/5 w-full"></div>
+<div>
+<p class="text-label-xs text-on-surface-variant uppercase mb-1">Total Strikes</p>
+<div class="flex items-end gap-2">
+<span class="font-display-metrics text-[32px] text-on-surface">4,102</span>
+</div>
+</div>
+</div>
+</div>
+<!-- AI Coach Insights -->
+<div class="relative overflow-hidden glass-card rounded-2xl p-6 border-primary/20">
+<div class="absolute top-0 right-0 p-3">
+<span class="material-symbols-outlined text-primary/40 text-4xl" data-icon="auto_awesome">auto_awesome</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-4">Coach Insights</h3>
+<p class="text-body-sm text-on-surface mb-4 leading-relaxed">
+                            "Your <span class="text-primary font-bold">right pinky</span> reach for the <span class="bg-surface-variant px-1.5 rounded text-data-mono">P</span> and <span class="bg-surface-variant px-1.5 rounded text-data-mono">[</span> keys is <span class="text-error font-bold">15% slower</span> than average. Consider shifting your right hand position slightly when coding."
+                        </p>
+<button class="w-full py-2 rounded-lg bg-surface-variant/50 text-body-sm font-medium hover:bg-primary/20 transition-all border border-white/5">
+                            View Exercise
+                        </button>
+</div>
+<!-- Problem Keys List -->
+<div class="glass-card rounded-2xl p-6">
+<h3 class="font-headline-md text-headline-md mb-4">Latency Peaks</h3>
+<div class="space-y-3">
+<div class="flex items-center justify-between p-2 rounded-lg bg-error-container/10 border border-error-container/20">
+<div class="flex items-center gap-3">
+<span class="w-8 h-8 rounded bg-surface-variant flex items-center justify-center font-data-mono text-xs">P</span>
+<span class="text-body-sm">114ms</span>
+</div>
+<span class="material-symbols-outlined text-error" data-icon="trending_up">trending_up</span>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg bg-surface-variant/30 border border-white/5">
+<div class="flex items-center gap-3">
+<span class="w-8 h-8 rounded bg-surface-variant flex items-center justify-center font-data-mono text-xs">B</span>
+<span class="text-body-sm">96ms</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="remove">remove</span>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg bg-surface-variant/30 border border-white/5">
+<div class="flex items-center gap-3">
+<span class="w-8 h-8 rounded bg-surface-variant flex items-center justify-center font-data-mono text-xs">Z</span>
+<span class="text-body-sm">92ms</span>
+</div>
+<span class="material-symbols-outlined text-secondary" data-icon="trending_down">trending_down</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Micro-interactions Script -->
+<script>
+        // Toggle logic for Heatmap Mode
+        const freqBtn = document.getElementById('freqToggle');
+        const latBtn = document.getElementById('latToggle');
+
+        freqBtn.addEventListener('click', () => {
+            freqBtn.classList.add('bg-primary', 'text-on-primary', 'shadow-lg');
+            freqBtn.classList.remove('text-on-surface-variant');
+            latBtn.classList.remove('bg-primary', 'text-on-primary', 'shadow-lg');
+            latBtn.classList.add('text-on-surface-variant');
+        });
+
+        latBtn.addEventListener('click', () => {
+            latBtn.classList.add('bg-primary', 'text-on-primary', 'shadow-lg');
+            latBtn.classList.remove('text-on-surface-variant');
+            freqBtn.classList.remove('bg-primary', 'text-on-primary', 'shadow-lg');
+            freqBtn.classList.add('text-on-surface-variant');
+        });
+
+        // Add subtle hover tracking for keys
+        document.querySelectorAll('.key-glow').forEach(key => {
+            key.addEventListener('mouseenter', () => {
+                // Potential to update the sidebar stats dynamically here
+                console.log('Focusing on key:', key.innerText);
+            });
+        });
+    </script>
+</body></html>

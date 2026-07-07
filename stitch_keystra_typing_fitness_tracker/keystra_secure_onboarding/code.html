@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Keystra | Onboarding</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;family=Geist:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#131314",
+                        "outline-variant": "#464554",
+                        "on-primary-container": "#e7e4ff",
+                        "on-tertiary": "#472a00",
+                        "surface-variant": "#353436",
+                        "inverse-surface": "#e5e2e3",
+                        "outline": "#918f9f",
+                        "on-primary": "#1c0b9f",
+                        "inverse-primary": "#4f4ccd",
+                        "surface-container-highest": "#353436",
+                        "surface-tint": "#c2c1ff",
+                        "on-background": "#e5e2e3",
+                        "on-surface-variant": "#c7c4d6",
+                        "on-secondary-fixed": "#002113",
+                        "tertiary-container": "#915b00",
+                        "surface-container-lowest": "#0e0e0f",
+                        "on-secondary-fixed-variant": "#005236",
+                        "tertiary": "#ffb95f",
+                        "tertiary-fixed": "#ffddb8",
+                        "surface": "#131314",
+                        "primary-fixed": "#e2dfff",
+                        "surface-container": "#201f20",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-high": "#2a2a2b",
+                        "primary-fixed-dim": "#c2c1ff",
+                        "on-secondary": "#003824",
+                        "error": "#ffb4ab",
+                        "on-surface": "#e5e2e3",
+                        "on-primary-fixed": "#0c006a",
+                        "on-secondary-container": "#00311f",
+                        "on-tertiary-fixed": "#2a1700",
+                        "on-primary-fixed-variant": "#3631b4",
+                        "secondary": "#4edea3",
+                        "on-tertiary-container": "#ffe1c2",
+                        "primary": "#c2c1ff",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "secondary-container": "#00a572",
+                        "inverse-on-surface": "#313031",
+                        "on-error": "#690005",
+                        "primary-container": "#5856d6",
+                        "surface-container-low": "#1c1b1c",
+                        "error-container": "#93000a",
+                        "surface-bright": "#39393a",
+                        "secondary-fixed": "#6ffbbe",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "background": "#131314",
+                        "secondary-fixed-dim": "#4edea3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "grid-columns": "12",
+                        "grid-gutter": "20px",
+                        "unit": "4px",
+                        "stack-gap": "12px",
+                        "container-padding": "24px",
+                        "section-gap": "40px"
+                    },
+                    "fontFamily": {
+                        "display-metrics": ["Geist"],
+                        "headline-lg": ["Geist"],
+                        "headline-md": ["Geist"],
+                        "data-mono": ["JetBrains Mono"],
+                        "body-lg": ["Inter"],
+                        "label-xs": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-metrics": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700"}],
+                        "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "data-mono": ["14px", {"lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-xs": ["11px", {"lineHeight": "16px", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(32, 31, 32, 0.6);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #131314;
+            color: #e5e2e3;
+            overflow: hidden;
+        }
+        .keycap-grid {
+            mask-image: radial-gradient(circle, black 0%, transparent 70%);
+        }
+    </style>
+</head>
+<body class="font-body-lg text-body-lg selection:bg-primary/30">
+<!-- Background Layer: Abstract Keycaps Animation -->
+<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+<div class="keycap-grid absolute inset-0 grid grid-cols-12 grid-rows-12 gap-8 p-12 opacity-10">
+<!-- Dynamically generated "keycaps" for visual texture -->
+<script>
+                const grid = document.querySelector('.keycap-grid');
+                for(let i=0; i<48; i++) {
+                    const div = document.createElement('div');
+                    div.className = 'w-16 h-16 border border-white/20 rounded-xl flex items-center justify-center font-data-mono text-white/40 animate-float';
+                    div.style.animationDelay = `${Math.random() * 5}s`;
+                    div.style.animationDuration = `${6 + Math.random() * 4}s`;
+                    div.innerText = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+                    grid.appendChild(div);
+                }
+            </script>
+</div>
+<!-- Gradient Overlay -->
+<div class="absolute inset-0 bg-gradient-to-b from-transparent via-background/50 to-background"></div>
+</div>
+<!-- Shell Filter applied: Onboarding is task-focused, Nav is suppressed -->
+<main class="relative z-10 flex flex-col items-center justify-center min-h-screen px-container-padding">
+<!-- Header & Branding -->
+<div class="mb-section-gap text-center max-w-2xl">
+<div class="flex items-center justify-center gap-2 mb-stack-gap">
+<span class="material-symbols-outlined text-primary text-4xl" style="font-variation-settings: 'FILL' 1;">security</span>
+<span class="font-headline-lg text-headline-lg font-bold tracking-tight">Keystra</span>
+</div>
+<h1 class="font-display-metrics text-display-metrics mb-stack-gap leading-none">
+                Keystra stays on <br/><span class="text-primary">your machine.</span>
+</h1>
+<p class="text-on-surface-variant font-body-lg max-w-lg mx-auto">
+                No cloud syncing. No keylogging of content. Your typing intelligence is computed locally and stays under your control.
+            </p>
+</div>
+<!-- Privacy & Permissions Bento -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-grid-gutter max-w-4xl w-full">
+<!-- Local Architecture Card -->
+<div class="glass-panel p-container-padding rounded-xl flex flex-col gap-stack-gap">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">database</span>
+</div>
+<h3 class="font-headline-md text-headline-md">Local-only Storage</h3>
+</div>
+<p class="text-on-surface-variant font-body-sm">
+                    All telemetry and keystroke patterns are encrypted and stored in an on-device SQLite database. We never see what you type.
+                </p>
+<div class="mt-auto flex items-center gap-2">
+<span class="px-2 py-1 bg-secondary/10 text-secondary font-label-xs text-label-xs rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">verified_user</span>
+                        GDPR Compliant
+                    </span>
+<span class="px-2 py-1 bg-surface-variant text-on-surface-variant font-label-xs text-label-xs rounded-full">
+                        Zero Cloud Outbound
+                    </span>
+</div>
+</div>
+<!-- Permission Request: Accessibility -->
+<div class="glass-panel p-container-padding rounded-xl flex flex-col gap-stack-gap border-l-4 border-l-primary">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined">accessibility_new</span>
+</div>
+<h3 class="font-headline-md text-headline-md">Accessibility</h3>
+</div>
+<!-- Tooltip Container -->
+<div class="relative group">
+<span class="material-symbols-outlined text-outline cursor-help text-body-lg">info</span>
+<div class="absolute bottom-full right-0 mb-2 w-64 p-3 bg-surface-container-highest rounded-lg shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-outline-variant z-50">
+<p class="text-label-xs text-on-surface">Why? This allows Keystra to identify which application you are currently typing in to provide context-aware analytics.</p>
+</div>
+</div>
+</div>
+<p class="text-on-surface-variant font-body-sm">
+                    Required to track per-app performance metrics and heatmap distribution across different software environments.
+                </p>
+<button class="mt-4 w-full py-2 bg-surface-variant hover:bg-surface-container-high text-on-surface font-body-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2">
+                    Grant Access
+                    <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+</button>
+</div>
+<!-- Permission Request: Input Monitoring -->
+<div class="glass-panel p-container-padding rounded-xl flex flex-col gap-stack-gap border-l-4 border-l-primary">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined">keyboard</span>
+</div>
+<h3 class="font-headline-md text-headline-md">Input Monitoring</h3>
+</div>
+<div class="relative group">
+<span class="material-symbols-outlined text-outline cursor-help text-body-lg">info</span>
+<div class="absolute bottom-full right-0 mb-2 w-64 p-3 bg-surface-container-highest rounded-lg shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-outline-variant z-50">
+<p class="text-label-xs text-on-surface">Why? This is used to calculate WPM, burst speed, and key frequency. We specifically ignore password fields and sensitive inputs.</p>
+</div>
+</div>
+</div>
+<p class="text-on-surface-variant font-body-sm">
+                    Enables the capture of keystroke timestamps to measure typing speed, accuracy, and physical finger travel distance.
+                </p>
+<button class="mt-4 w-full py-2 bg-surface-variant hover:bg-surface-container-high text-on-surface font-body-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2">
+                    Grant Access
+                    <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+</button>
+</div>
+<!-- Privacy Promise Card -->
+<div class="glass-panel p-container-padding rounded-xl flex items-center gap-6 overflow-hidden relative">
+<div class="flex-1">
+<h3 class="font-headline-md text-headline-md mb-1">Our Promise</h3>
+<p class="text-on-surface-variant font-body-sm italic">
+                        "Your data is a liability to us, but an asset to you. We choose to never hold the keys."
+                    </p>
+</div>
+<div class="w-24 h-24 flex-shrink-0 opacity-20">
+<img class="w-full h-full object-contain" data-alt="A minimalist, highly detailed digital illustration of an encrypted padlock floating in a void of binary data. The style is modern glassmorphism with deep navy and electric indigo highlights, matching a high-performance productivity software aesthetic. Lighting is soft and volumetric, creating a sense of deep security and technological sophistication." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYObneVb5qX4PhNO7-sY0m3n_vHu9nQB-RhRSB61Y36EPpX5fuy9XAs6Zx4McCVg-m5NiadmA1-dFp4JmsMWa5zatbbjGns7zNy5Wc6EEy4xlvI1rUK8ysz3_po0Rm9F7H_8Qq97Rk_M3RTUb_JZRdaB6OvdlmdULyEr_af2NU7f_7D9J0po8HxmzSkZsgMj8jAFqjiI44lakizItD0YHYQbL2VdP06ZZC5nrQuM7zVqrPIdp0dNwaZT4OCa9xBlaKiB1fdadSZ5Q"/>
+</div>
+</div>
+</div>
+<!-- Action Footer -->
+<div class="mt-section-gap flex flex-col items-center gap-stack-gap">
+<button class="px-12 py-4 bg-primary text-on-primary font-headline-md text-headline-md rounded-xl hover:shadow-[0_0_30px_rgba(194,193,255,0.4)] active:scale-95 transition-all flex items-center gap-3">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bolt</span>
+                Securely Initialize
+            </button>
+<p class="font-label-xs text-label-xs text-outline flex items-center gap-2 uppercase tracking-widest">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+                Ready for local deployment
+            </p>
+</div>
+</main>
+<!-- Success Toast (Hidden by default) -->
+<div class="fixed top-8 left-1/2 -translate-x-1/2 transform translate-y-[-100px] opacity-0 transition-all duration-500 z-[100] flex items-center gap-3 px-6 py-3 bg-surface-bright/90 backdrop-blur-xl border border-white/10 rounded-full shadow-2xl" id="toast">
+<span class="material-symbols-outlined text-secondary">check_circle</span>
+<span class="font-body-sm font-medium">Permissions Verified. Welcome to Keystra.</span>
+</div>
+<script>
+        // Micro-interaction: Simulate "Securely Initialize" progress
+        const mainBtn = document.querySelector('button.bg-primary');
+        mainBtn.addEventListener('click', () => {
+            mainBtn.innerHTML = `<span class="material-symbols-outlined animate-spin">refresh</span> Initializing...`;
+            mainBtn.classList.add('opacity-80', 'pointer-events-none');
+            
+            setTimeout(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.remove('translate-y-[-100px]', 'opacity-0');
+                toast.classList.add('translate-y-0', 'opacity-100');
+                
+                mainBtn.innerHTML = `<span class="material-symbols-outlined">done</span> Initialized`;
+                mainBtn.classList.remove('bg-primary');
+                mainBtn.classList.add('bg-secondary', 'text-on-secondary');
+
+                setTimeout(() => {
+                    // Logic to proceed to dashboard would go here
+                    console.log("Onboarding complete. Transitioning to Dashboard...");
+                }, 1500);
+            }, 2000);
+        });
+    </script>
+</body></html>
