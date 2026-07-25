@@ -114,10 +114,6 @@ function startHook() {
         hookProcess.stderr.on('data', (data) => {
             console.error(`Hook stderr: ${data}`);
         });
-
-        hookProcess.on('close', (code) => {
-            console.log(`Hook process exited with code ${code}`);
-        });
     } catch (e) {
         console.error('Failed to start C# hook:', e);
     }
