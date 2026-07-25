@@ -8,7 +8,7 @@
     "build": "vite build",
     "prod": "electron src/main/main.js",
     "package": "npm run build && electron-builder",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -44,6 +44,7 @@
     "autoprefixer": "^10.5.2",
     "electron": "^43.0.0",
     "electron-builder": "^26.15.3",
+    "jest": "^30.4.2",
     "postcss": "^8.5.16",
     "tailwindcss": "^4.3.2",
     "vite": "^8.1.3"
