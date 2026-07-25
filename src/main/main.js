@@ -167,6 +167,18 @@ app.whenReady().then(() => {
     store = new Store(app.getPath('userData'));
     metrics = new MetricsEngine(store);
 
+    const { session } = require('electron');
+    if (!isDev) {
+        session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+            callback({
+                responseHeaders: {
+                    ...details.responseHeaders,
+                    'Content-Security-Policy': ["default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data:;"]
+                }
+            });
+        });
+    }
+
     // Write a dummy 1x1 png if icon doesn't exist to prevent tray crash
     const fs = require('fs');
     const iconPath = path.join(__dirname, 'icon.png');
