@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 
-export default function Heatmap({ stats }) {
+// ⚡ Bolt Optimization: Memoize Heatmap component to prevent expensive grid generation from re-running when parent liveStats updates
+const Heatmap = memo(function Heatmap({ stats }) {
   const [heatmapMode, setHeatmapMode] = useState('frequency'); // 'frequency' or 'latency'
   
   const keyMetrics = stats.keyMetrics || {};
@@ -350,4 +351,6 @@ export default function Heatmap({ stats }) {
       </div>
     </div>
   );
-}
+});
+
+export default Heatmap;

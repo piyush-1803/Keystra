@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 
-export default function Analytics({ stats }) {
+// ⚡ Bolt Optimization: Memoize Analytics component to prevent expensive internal array mapping from re-running when parent liveStats updates
+const Analytics = memo(function Analytics({ stats }) {
   const [timeframe, setTimeframe] = useState('weekly');
   const sessions = stats.sessions || [];
   const keyMetrics = stats.keyMetrics || {};
@@ -417,4 +418,6 @@ export default function Analytics({ stats }) {
       </footer>
     </div>
   );
-}
+});
+
+export default Analytics;

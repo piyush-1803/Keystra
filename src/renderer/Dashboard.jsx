@@ -1,12 +1,22 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 export default function Dashboard({ stats, liveStats, onNavigate }) {
   const sessions = stats.sessions || [];
   
   // Calculate total keys typed today
   const todayStr = new Date().toISOString().split('T')[0];
-  const todaySessions = sessions.filter(s => new Date(s.start_time).toISOString().split('T')[0] === todayStr);
-  const todayKeysCount = todaySessions.reduce((acc, s) => acc + s.keystroke_count, 0);
+
+  // ⚡ Bolt Optimization: Memoize heavy array filtering to prevent recalculation on every liveStats update
+  const todaySessions = useMemo(() =>
+    sessions.filter(s => new Date(s.start_time).toISOString().split('T')[0] === todayStr),
+    [sessions, todayStr]
+  );
+
+  // ⚡ Bolt Optimization: Memoize reduction over todaySessions
+  const todayKeysCount = useMemo(() =>
+    todaySessions.reduce((acc, s) => acc + s.keystroke_count, 0),
+    [todaySessions]
+  );
   
   // Format keys typed today (e.g., 42.8k)
   const formatKeysCount = (count) => {
@@ -17,15 +27,29 @@ export default function Dashboard({ stats, liveStats, onNavigate }) {
   };
 
   // Find Personal Bests
-  const maxSpeed = sessions.reduce((max, s) => s.avg_wpm > max ? s.avg_wpm : max, 0);
-  const maxVolume = Object.values(stats.streaks.dailyKeys || {}).reduce((max, val) => val > max ? val : max, 0);
+  // ⚡ Bolt Optimization: Memoize heavy reduction over all sessions
+  const maxSpeed = useMemo(() =>
+    sessions.reduce((max, s) => s.avg_wpm > max ? s.avg_wpm : max, 0),
+    [sessions]
+  );
+  const maxVolume = useMemo(() =>
+    Object.values(stats.streaks?.dailyKeys || {}).reduce((max, val) => val > max ? val : max, 0),
+    [stats.streaks?.dailyKeys]
+  );
   
   // Group recent sessions (last 3)
-  const recentSessions = [...sessions].reverse().slice(0, 3);
+  // ⚡ Bolt Optimization: Memoize array cloning, reversing and slicing
+  const recentSessions = useMemo(() =>
+    [...sessions].reverse().slice(0, 3),
+    [sessions]
+  );
 
   // Daily goal calculation (10k keys)
   const dailyGoal = 10000;
-  const goalProgress = Math.min(100, Math.round((todayKeysCount / dailyGoal) * 100));
+  const goalProgress = useMemo(() =>
+    Math.min(100, Math.round((todayKeysCount / dailyGoal) * 100)),
+    [todayKeysCount]
+  );
 
   // Determine standard app icons
   const getAppIcon = (category) => {
@@ -50,35 +74,40 @@ export default function Dashboard({ stats, liveStats, onNavigate }) {
   };
 
   // Generate day items for streak consistency card (past 5 days)
-  const last5Days = Array.from({ length: 5 }).map((_, idx) => {
-    const d = new Date();
-    d.setDate(d.getDate() - (4 - idx));
-    return d;
-  });
-  const dailyKeys = stats.streaks?.dailyKeys || {};
-  const dayItems = last5Days.map(date => {
-    const dateStr = date.toISOString().split('T')[0];
-    const keyCount = dailyKeys[dateStr] || 0;
-    const weekdayName = date.toLocaleDateString('en-US', { weekday: 'short' })[0];
-    return {
-      name: weekdayName,
-      active: keyCount > 0,
-      isToday: dateStr === todayStr
-    };
-  });
+  // ⚡ Bolt Optimization: Memoize expensive object mapping and date calculations
+  const dayItems = useMemo(() => {
+    const last5Days = Array.from({ length: 5 }).map((_, idx) => {
+      const d = new Date();
+      d.setDate(d.getDate() - (4 - idx));
+      return d;
+    });
+    const dailyKeys = stats.streaks?.dailyKeys || {};
+    return last5Days.map(date => {
+      const dateStr = date.toISOString().split('T')[0];
+      const keyCount = dailyKeys[dateStr] || 0;
+      const weekdayName = date.toLocaleDateString('en-US', { weekday: 'short' })[0];
+      return {
+        name: weekdayName,
+        active: keyCount > 0,
+        isToday: dateStr === todayStr
+      };
+    });
+  }, [stats.streaks?.dailyKeys, todayStr]);
 
   // Calculate wave path for Today's Velocity
-  const maxSessionWpm = Math.max(100, ...todaySessions.map(s => s.avg_wpm));
-  const getY = (wpm) => {
-    // scale 0 to maxSessionWpm -> 180 to 20
-    return 180 - (wpm / maxSessionWpm) * 160;
-  };
-  
-  let wavePath = "";
-  let areaPath = "";
-  let controlPoints = [];
-  
-  if (todaySessions.length > 0) {
+  // ⚡ Bolt Optimization: Memoize heavy SVG path generation to prevent stutter during typing bursts
+  const waveData = useMemo(() => {
+    if (todaySessions.length === 0) {
+      return { wavePath: "", areaPath: "", controlPoints: [] };
+    }
+
+    const maxSessionWpm = Math.max(100, ...todaySessions.map(s => s.avg_wpm));
+    const getY = (wpm) => 180 - (wpm / maxSessionWpm) * 160;
+
+    let wavePath = "";
+    let areaPath = "";
+    let controlPoints = [];
+
     const pointsData = todaySessions.map(s => s.avg_wpm);
     if (pointsData.length === 1) {
       pointsData.unshift(0);
@@ -101,7 +130,11 @@ export default function Dashboard({ stats, liveStats, onNavigate }) {
       wavePath += ` C ${cpX1} ${cpY1}, ${cpX2} ${cpY2}, ${curr.x} ${curr.y}`;
     }
     areaPath = `${wavePath} L 1000 200 L 0 200 Z`;
-  }
+
+    return { wavePath, areaPath, controlPoints };
+  }, [todaySessions]);
+
+  const { wavePath, areaPath, controlPoints } = waveData;
 
   return (
     <div className="flex-1 flex flex-col min-w-0 bg-surface-dim relative overflow-hidden">
