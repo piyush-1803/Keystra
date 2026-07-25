@@ -19,6 +19,8 @@ class Store {
             }
         };
 
+        this.savePromise = Promise.resolve();
+
         this.init();
     }
 
@@ -52,14 +54,29 @@ class Store {
     }
 
     save() {
+        // Capture the state immediately so concurrent saves write the correct snapshot
+        let jsonData;
         try {
-            // Atomic write: write to temp file first, then rename
-            const tempPath = this.filePath + '.tmp';
-            fs.writeFileSync(tempPath, JSON.stringify(this.data, null, 2), 'utf8');
-            fs.renameSync(tempPath, this.filePath);
+            jsonData = JSON.stringify(this.data, null, 2);
         } catch (e) {
-            console.error('Failed to save Keystra store:', e);
+            console.error('Failed to stringify Keystra store:', e);
+            return this.savePromise;
         }
+
+        // Enqueue the save operation to prevent concurrent writes and race conditions
+        this.savePromise = this.savePromise.then(async () => {
+            try {
+                const tempPath = this.filePath + '.tmp';
+                await fs.promises.writeFile(tempPath, jsonData, 'utf8');
+                await fs.promises.rename(tempPath, this.filePath);
+            } catch (e) {
+                console.error('Failed to save Keystra store:', e);
+            }
+        }).catch(err => {
+            console.error('Unexpected error in save chain:', err);
+        });
+
+        return this.savePromise;
     }
 
     // Sessions API
