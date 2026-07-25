@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage } = require('electron');
+const { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage, session } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 const Store = require('./store');
@@ -164,6 +164,15 @@ function setupTray() {
 }
 
 app.whenReady().then(() => {
+    session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+        callback({
+            responseHeaders: {
+                ...details.responseHeaders,
+                'Content-Security-Policy': ["default-src 'self' http://localhost:5173; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:5173; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data:; connect-src 'self' ws://localhost:5173 http://localhost:5173;"]
+            }
+        });
+    });
+
     store = new Store(app.getPath('userData'));
     metrics = new MetricsEngine(store);
 

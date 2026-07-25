@@ -3,7 +3,7 @@ const path = require('path');
 
 // 1. Start Vite dev server
 console.log('Starting Vite development server...');
-const viteProcess = spawn('npx.cmd', ['vite'], {
+const viteProcess = spawn('npx', ['vite'], {
     shell: true,
     env: { ...process.env, FORCE_COLOR: true }
 });
@@ -28,7 +28,7 @@ function launchElectron() {
     if (electronProcess) return; // Prevent double spawn
 
     console.log('Launching Electron window...');
-    electronProcess = spawn('npx.cmd', ['electron', 'src/main/main.js'], {
+    electronProcess = spawn('npx', ['electron', 'src/main/main.js'], {
         shell: true,
         env: { ...process.env, NODE_ENV: 'development' }
     });
