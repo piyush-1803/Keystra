@@ -47,8 +47,8 @@ class MetricsEngine {
 
     // Categorize windows based on process names and window titles
     categorizeApp(processName, windowTitle) {
-        const proc = processName.toLowerCase();
-        const title = windowTitle.toLowerCase();
+        const proc = (processName || '').toLowerCase();
+        const title = (windowTitle || '').toLowerCase();
 
         // 1. Coding (IDEs, text editors, terminals)
         if (proc.includes('code') || proc.includes('idea') || proc.includes('sublime') || 
