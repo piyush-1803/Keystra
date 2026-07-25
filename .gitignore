@@ -37,3 +37,8 @@ pnpm-debug.log*
 .env.development.local
 .env.test.local
 .env.production.local
+TestCompile/
+src/hook/tests/bin/
+src/hook/tests/obj/
+src/hook/tests/TestResults/
+coverage.cobertura.xml
