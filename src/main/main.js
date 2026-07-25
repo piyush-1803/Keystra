@@ -229,3 +229,14 @@ ipcMain.on('close-overlay', () => {
         overlayWindow.close();
     }
 });
+
+// For testing purposes
+if (process.env.NODE_ENV === 'test') {
+    module.exports = {
+        startHook,
+        createMainWindow,
+        createOverlayWindow,
+        stopHook,
+        setupTray,
+    };
+}
