@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage } = require('electron');
+const { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage, session } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 const Store = require('./store');
@@ -32,7 +32,6 @@ function createMainWindow() {
 
     if (isDev) {
         mainWindow.loadURL('http://localhost:5173');
-        // mainWindow.webContents.openDevTools();
     } else {
         mainWindow.loadFile(path.join(__dirname, '../../dist/index.html'));
     }
@@ -114,10 +113,6 @@ function startHook() {
         hookProcess.stderr.on('data', (data) => {
             console.error(`Hook stderr: ${data}`);
         });
-
-        hookProcess.on('close', (code) => {
-            console.log(`Hook process exited with code ${code}`);
-        });
     } catch (e) {
         console.error('Failed to start C# hook:', e);
     }
@@ -164,8 +159,29 @@ function setupTray() {
 }
 
 app.whenReady().then(() => {
+    session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+        callback({
+            responseHeaders: {
+                ...details.responseHeaders,
+                'Content-Security-Policy': ["default-src 'self' http://localhost:5173; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:5173; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data:; connect-src 'self' ws://localhost:5173 http://localhost:5173;"]
+            }
+        });
+    });
+
     store = new Store(app.getPath('userData'));
     metrics = new MetricsEngine(store);
+
+    const { session } = require('electron');
+    if (!isDev) {
+        session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+            callback({
+                responseHeaders: {
+                    ...details.responseHeaders,
+                    'Content-Security-Policy': ["default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data:;"]
+                }
+            });
+        });
+    }
 
     // Write a dummy 1x1 png if icon doesn't exist to prevent tray crash
     const fs = require('fs');
@@ -229,3 +245,14 @@ ipcMain.on('close-overlay', () => {
         overlayWindow.close();
     }
 });
+
+// For testing purposes
+if (process.env.NODE_ENV === 'test') {
+    module.exports = {
+        startHook,
+        createMainWindow,
+        createOverlayWindow,
+        stopHook,
+        setupTray,
+    };
+}
