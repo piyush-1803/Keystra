@@ -90,3 +90,53 @@ describe('Store - updateStreak', () => {
         expect(store.data.streaks.lastActiveDate).toBe('2024-01-01');
     });
 });
+
+describe('Store - init', () => {
+    let store;
+    let consoleErrorSpy;
+
+    beforeEach(() => {
+        // Reset mocks
+        jest.clearAllMocks();
+
+        // Setup mock implementations
+        fs.existsSync.mockReturnValue(true); // Return true so it attempts to read the file
+        fs.mkdirSync.mockImplementation(() => {});
+        fs.writeFileSync.mockImplementation(() => {});
+        fs.renameSync.mockImplementation(() => {});
+
+        // Spy on console.error
+        consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+        consoleErrorSpy.mockRestore();
+    });
+
+    test('should catch and log JSON parse errors on initialization and fallback to default data', () => {
+        // Mock fs.readFileSync to return invalid JSON
+        fs.readFileSync.mockReturnValue('{ invalid json ');
+
+        // Instantiate Store, which calls init() automatically
+        store = new Store('/mock/path');
+
+        // Check if console.error was called
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+            'Failed to load Keystra store:',
+            expect.any(SyntaxError)
+        );
+
+        // Verify that store data is initialized to its defaults
+        expect(store.data).toEqual({
+            onboardingCompleted: false,
+            sessions: [],
+            key_metrics: {},
+            digraph_metrics: {},
+            streaks: {
+                currentStreak: 0,
+                lastActiveDate: null,
+                dailyKeys: {}
+            }
+        });
+    });
+});
