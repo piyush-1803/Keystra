@@ -1,0 +1,3 @@
+## 2024-07-25 - React Memoization in Electron App
+**Learning:** In a live-updating Electron app, passing frequent real-time updates (like `liveStats` from a hook) to a parent component (`App`) forces expensive array operations in child components to re-run on every keystroke if they aren't properly memoized.
+**Action:** Use `React.memo` to shield static components from unnecessary prop updates, and heavily memoize array map/filter/reduce operations in components that *do* receive real-time data but only need to compute derived state based on less frequent changes. Ensure primitive values are passed to dependency arrays to avoid subtle state bugs (like caching `new Date()` permanently).
