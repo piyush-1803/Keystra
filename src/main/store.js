@@ -32,23 +32,34 @@ class Store {
     }
 
     init() {
-        try {
-            // Create user data folder if it doesn't exist
-            if (!fs.existsSync(this.dirPath)) {
+        // Create user data folder if it doesn't exist (sync because it's only once and quick)
+        if (!fs.existsSync(this.dirPath)) {
+            try {
                 fs.mkdirSync(this.dirPath, { recursive: true });
+            } catch (e) {
+                console.error('Failed to create user data folder:', e);
+            }
+        }
+
+        // Load existing file if present asynchronously
+        fs.readFile(this.filePath, 'utf8', (err, raw) => {
+            if (err) {
+                if (err.code === 'ENOENT') {
+                    // File doesn't exist, save the empty initialized state
+                    this.save();
+                } else {
+                    console.error('Failed to read Keystra store file:', err);
+                }
+                return;
             }
 
-            // Load existing file if present
-            if (fs.existsSync(this.filePath)) {
-                const raw = fs.readFileSync(this.filePath, 'utf8');
+            try {
                 const parsed = JSON.parse(raw);
                 this.data = { ...this.data, ...parsed };
-            } else {
-                this.save();
+            } catch (e) {
+                console.error('Failed to parse Keystra store file:', e);
             }
-        } catch (e) {
-            console.error('Failed to load Keystra store:', e);
-        }
+        });
     }
 
     save() {
