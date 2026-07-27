@@ -114,15 +114,17 @@ describe('Store - init', () => {
     });
 
     test('should catch and log JSON parse errors on initialization and fallback to default data', () => {
-        // Mock fs.readFileSync to return invalid JSON
-        fs.readFileSync.mockReturnValue('{ invalid json ');
+        // Mock fs.readFile to return invalid JSON
+        fs.readFile.mockImplementation((path, encoding, callback) => {
+            callback(null, '{ invalid json ');
+        });
 
         // Instantiate Store, which calls init() automatically
         store = new Store('/mock/path');
 
         // Check if console.error was called
         expect(consoleErrorSpy).toHaveBeenCalledWith(
-            'Failed to load Keystra store:',
+            'Failed to parse Keystra store file:',
             expect.any(SyntaxError)
         );
 
