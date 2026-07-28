@@ -122,7 +122,7 @@ describe('Store - init', () => {
 
         // Check if console.error was called
         expect(consoleErrorSpy).toHaveBeenCalledWith(
-            'Failed to load Keystra store:',
+            'Failed to parse Keystra store file:',
             expect.any(SyntaxError)
         );
 
