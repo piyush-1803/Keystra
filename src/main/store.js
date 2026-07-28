@@ -43,25 +43,19 @@ class Store {
             }
         }
 
-        // Load existing file if present asynchronously
-        fs.readFile(this.filePath, 'utf8', (err, raw) => {
-            if (err) {
-                if (err.code === 'ENOENT') {
-                    // File doesn't exist, save the empty initialized state
-                    this.save();
-                } else {
-                    console.error('Failed to read Keystra store file:', err);
-                }
-                return;
-            }
-
-            try {
-                const parsed = JSON.parse(raw);
-                this.data = { ...this.data, ...parsed };
-            } catch (e) {
+        // Load existing file if present (sync on init to ensure data is ready)
+        try {
+            const raw = fs.readFileSync(this.filePath, 'utf8');
+            const parsed = JSON.parse(raw);
+            this.data = { ...this.data, ...parsed };
+        } catch (e) {
+            if (e.code === 'ENOENT') {
+                // File doesn't exist, save the empty initialized state
+                this.save();
+            } else {
                 console.error('Failed to parse Keystra store file:', e);
             }
-        });
+        }
     }
 
     save() {
