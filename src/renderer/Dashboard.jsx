@@ -1,12 +1,24 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 export default function Dashboard({ stats, liveStats, onNavigate }) {
   const sessions = stats.sessions || [];
   
-  // Calculate total keys typed today
+  // Date calculation
   const todayStr = new Date().toISOString().split('T')[0];
-  const todaySessions = sessions.filter(s => new Date(s.start_time).toISOString().split('T')[0] === todayStr);
-  const todayKeysCount = todaySessions.reduce((acc, s) => acc + s.keystroke_count, 0);
+
+  // Calculate total keys typed today, max speed, volume and recent sessions
+  const { todaySessions, todayKeysCount, maxSpeed, maxVolume, recentSessions } = useMemo(() => {
+    // ⚡ Bolt: Memoized expensive array reductions to prevent recalculation
+    // on every liveStats high-frequency update
+    const todaySessions = sessions.filter(s => new Date(s.start_time).toISOString().split('T')[0] === todayStr);
+    const todayKeysCount = todaySessions.reduce((acc, s) => acc + s.keystroke_count, 0);
+    const maxSpeed = sessions.reduce((max, s) => s.avg_wpm > max ? s.avg_wpm : max, 0);
+    const dailyKeys = stats.streaks?.dailyKeys || {};
+    const maxVolume = Object.values(dailyKeys).reduce((max, val) => val > max ? val : max, 0);
+    const recentSessions = [...sessions].reverse().slice(0, 3);
+
+    return { todaySessions, todayKeysCount, maxSpeed, maxVolume, recentSessions };
+  }, [sessions, stats.streaks, todayStr]);
   
   // Format keys typed today (e.g., 42.8k)
   const formatKeysCount = (count) => {
@@ -16,16 +28,9 @@ export default function Dashboard({ stats, liveStats, onNavigate }) {
     return count.toString();
   };
 
-  // Find Personal Bests
-  const maxSpeed = sessions.reduce((max, s) => s.avg_wpm > max ? s.avg_wpm : max, 0);
-  const maxVolume = Object.values(stats.streaks.dailyKeys || {}).reduce((max, val) => val > max ? val : max, 0);
-  
-  // Group recent sessions (last 3)
-  const recentSessions = [...sessions].reverse().slice(0, 3);
-
   // Daily goal calculation (10k keys)
   const dailyGoal = 10000;
-  const goalProgress = Math.min(100, Math.round((todayKeysCount / dailyGoal) * 100));
+  const goalProgress = useMemo(() => Math.min(100, Math.round((todayKeysCount / dailyGoal) * 100)), [todayKeysCount]);
 
   // Determine standard app icons
   const getAppIcon = (category) => {
@@ -50,58 +55,65 @@ export default function Dashboard({ stats, liveStats, onNavigate }) {
   };
 
   // Generate day items for streak consistency card (past 5 days)
-  const last5Days = Array.from({ length: 5 }).map((_, idx) => {
-    const d = new Date();
-    d.setDate(d.getDate() - (4 - idx));
-    return d;
-  });
-  const dailyKeys = stats.streaks?.dailyKeys || {};
-  const dayItems = last5Days.map(date => {
-    const dateStr = date.toISOString().split('T')[0];
-    const keyCount = dailyKeys[dateStr] || 0;
-    const weekdayName = date.toLocaleDateString('en-US', { weekday: 'short' })[0];
-    return {
-      name: weekdayName,
-      active: keyCount > 0,
-      isToday: dateStr === todayStr
-    };
-  });
+  const dayItems = useMemo(() => {
+    const last5Days = Array.from({ length: 5 }).map((_, idx) => {
+      const d = new Date();
+      d.setDate(d.getDate() - (4 - idx));
+      return d;
+    });
+    const dailyKeys = stats.streaks?.dailyKeys || {};
+    return last5Days.map(date => {
+      const dateStr = date.toISOString().split('T')[0];
+      const keyCount = dailyKeys[dateStr] || 0;
+      const weekdayName = date.toLocaleDateString('en-US', { weekday: 'short' })[0];
+      return {
+        name: weekdayName,
+        active: keyCount > 0,
+        isToday: dateStr === todayStr
+      };
+    });
+  }, [stats.streaks, todayStr]);
 
   // Calculate wave path for Today's Velocity
-  const maxSessionWpm = Math.max(100, ...todaySessions.map(s => s.avg_wpm));
-  const getY = (wpm) => {
-    // scale 0 to maxSessionWpm -> 180 to 20
-    return 180 - (wpm / maxSessionWpm) * 160;
-  };
-  
-  let wavePath = "";
-  let areaPath = "";
-  let controlPoints = [];
-  
-  if (todaySessions.length > 0) {
-    const pointsData = todaySessions.map(s => s.avg_wpm);
-    if (pointsData.length === 1) {
-      pointsData.unshift(0);
-    }
+  const { wavePath, areaPath, controlPoints } = useMemo(() => {
+    // ⚡ Bolt: Memoized complex SVG path generation to avoid blocking the main thread
+    const maxSessionWpm = Math.max(100, ...todaySessions.map(s => s.avg_wpm));
+    const getY = (wpm) => {
+      // scale 0 to maxSessionWpm -> 180 to 20
+      return 180 - (wpm / maxSessionWpm) * 160;
+    };
     
-    const step = 1000 / (pointsData.length - 1);
-    controlPoints = pointsData.map((wpm, idx) => ({
-      x: idx * step,
-      y: getY(wpm)
-    }));
+    let wavePath = "";
+    let areaPath = "";
+    let controlPoints = [];
     
-    wavePath = `M ${controlPoints[0].x} ${controlPoints[0].y}`;
-    for (let i = 1; i < controlPoints.length; i++) {
-      const prev = controlPoints[i - 1];
-      const curr = controlPoints[i];
-      const cpX1 = prev.x + step / 2;
-      const cpY1 = prev.y;
-      const cpX2 = curr.x - step / 2;
-      const cpY2 = curr.y;
-      wavePath += ` C ${cpX1} ${cpY1}, ${cpX2} ${cpY2}, ${curr.x} ${curr.y}`;
+    if (todaySessions.length > 0) {
+      const pointsData = todaySessions.map(s => s.avg_wpm);
+      if (pointsData.length === 1) {
+        pointsData.unshift(0);
+      }
+
+      const step = 1000 / (pointsData.length - 1);
+      controlPoints = pointsData.map((wpm, idx) => ({
+        x: idx * step,
+        y: getY(wpm)
+      }));
+
+      wavePath = `M ${controlPoints[0].x} ${controlPoints[0].y}`;
+      for (let i = 1; i < controlPoints.length; i++) {
+        const prev = controlPoints[i - 1];
+        const curr = controlPoints[i];
+        const cpX1 = prev.x + step / 2;
+        const cpY1 = prev.y;
+        const cpX2 = curr.x - step / 2;
+        const cpY2 = curr.y;
+        wavePath += ` C ${cpX1} ${cpY1}, ${cpX2} ${cpY2}, ${curr.x} ${curr.y}`;
+      }
+      areaPath = `${wavePath} L 1000 200 L 0 200 Z`;
     }
-    areaPath = `${wavePath} L 1000 200 L 0 200 Z`;
-  }
+
+    return { wavePath, areaPath, controlPoints };
+  }, [todaySessions]);
 
   return (
     <div className="flex-1 flex flex-col min-w-0 bg-surface-dim relative overflow-hidden">
