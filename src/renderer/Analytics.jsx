@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
-export default function Analytics({ stats }) {
+// Wrapped in React.memo to prevent expensive re-renders when App updates high-frequency liveStats
+export default React.memo(function Analytics({ stats }) {
   const [timeframe, setTimeframe] = useState('weekly');
   const sessions = stats.sessions || [];
   const keyMetrics = stats.keyMetrics || {};
@@ -417,4 +418,4 @@ export default function Analytics({ stats }) {
       </footer>
     </div>
   );
-}
+});
