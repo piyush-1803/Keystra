@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 
-export default function Analytics({ stats }) {
+// Memoize the Analytics component to prevent expensive re-renders when the parent App component
+// updates due to high-frequency liveStats changes. It only depends on 'stats'.
+export default React.memo(function Analytics({ stats }) {
   const [timeframe, setTimeframe] = useState('weekly');
   const sessions = stats.sessions || [];
   const keyMetrics = stats.keyMetrics || {};
@@ -417,4 +419,4 @@ export default function Analytics({ stats }) {
       </footer>
     </div>
   );
-}
+});
