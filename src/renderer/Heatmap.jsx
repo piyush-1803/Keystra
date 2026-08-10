@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function Heatmap({ stats }) {
+export default React.memo(function Heatmap({ stats }) {
   const [heatmapMode, setHeatmapMode] = useState('frequency'); // 'frequency' or 'latency'
   
   const keyMetrics = stats.keyMetrics || {};
@@ -350,4 +350,4 @@ export default function Heatmap({ stats }) {
       </div>
     </div>
   );
-}
+})
