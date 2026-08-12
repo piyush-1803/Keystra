@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 
-export default function Analytics({ stats }) {
+// ⚡ Bolt: Wrapped Analytics in React.memo() to prevent unnecessary re-renders.
+// Since the parent component (App) updates multiple times per second due to liveStats,
+// memoizing this component ensures its expensive data processing and SVG rendering
+// only re-run when the 'stats' prop changes, saving significant CPU cycles.
+const Analytics = React.memo(function Analytics({ stats }) {
   const [timeframe, setTimeframe] = useState('weekly');
   const sessions = stats.sessions || [];
   const keyMetrics = stats.keyMetrics || {};
@@ -417,4 +421,6 @@ export default function Analytics({ stats }) {
       </footer>
     </div>
   );
-}
+});
+
+export default Analytics;
