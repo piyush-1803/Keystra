@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 
-export default function Heatmap({ stats }) {
+// ⚡ Bolt Optimization: Wrap component in React.memo()
+// Why: App.jsx updates liveStats state multiple times per second.
+// Without memoization, this triggers expensive re-renders in Heatmap
+// (which performs heavy array mapping/filtering for the UI).
+// Impact: Significantly reduces CPU load and prevents main thread blocking.
+const Heatmap = React.memo(function Heatmap({ stats }) {
   const [heatmapMode, setHeatmapMode] = useState('frequency'); // 'frequency' or 'latency'
   
   const keyMetrics = stats.keyMetrics || {};
@@ -350,4 +355,6 @@ export default function Heatmap({ stats }) {
       </div>
     </div>
   );
-}
+});
+
+export default Heatmap;

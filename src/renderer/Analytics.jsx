@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 
-export default function Analytics({ stats }) {
+// ⚡ Bolt Optimization: Wrap component in React.memo()
+// Why: App.jsx updates liveStats state multiple times per second.
+// Without memoization, this triggers expensive re-renders in Analytics
+// (which performs heavy array mapping/filtering for charts).
+// Impact: Significantly reduces CPU load and prevents main thread blocking.
+const Analytics = React.memo(function Analytics({ stats }) {
   const [timeframe, setTimeframe] = useState('weekly');
   const sessions = stats.sessions || [];
   const keyMetrics = stats.keyMetrics || {};
@@ -417,4 +422,6 @@ export default function Analytics({ stats }) {
       </footer>
     </div>
   );
-}
+});
+
+export default Analytics;
