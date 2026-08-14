@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 
-export default function Heatmap({ stats }) {
+// ⚡ Bolt: Wrapped Heatmap in React.memo to prevent expensive cascading re-renders.
+// Impact: Reduces React render cycles for this component by skipping updates caused by high-frequency parent state changes (like liveStats).
+const Heatmap = React.memo(function Heatmap({ stats }) {
   const [heatmapMode, setHeatmapMode] = useState('frequency'); // 'frequency' or 'latency'
   
   const keyMetrics = stats.keyMetrics || {};
@@ -350,4 +352,6 @@ export default function Heatmap({ stats }) {
       </div>
     </div>
   );
-}
+});
+
+export default Heatmap;

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 
-export default function Analytics({ stats }) {
+// ⚡ Bolt: Wrapped Analytics in React.memo to prevent expensive cascading re-renders.
+// Impact: Reduces React render cycles for this component by skipping updates caused by high-frequency parent state changes (like liveStats).
+const Analytics = React.memo(function Analytics({ stats }) {
   const [timeframe, setTimeframe] = useState('weekly');
   const sessions = stats.sessions || [];
   const keyMetrics = stats.keyMetrics || {};
@@ -417,4 +419,6 @@ export default function Analytics({ stats }) {
       </footer>
     </div>
   );
-}
+});
+
+export default Analytics;
