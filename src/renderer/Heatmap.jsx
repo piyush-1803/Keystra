@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 
-export default function Heatmap({ stats }) {
+// ⚡ Bolt Optimization: Wrapped Heatmap in React.memo() to prevent unnecessary re-renders.
+// The parent App component re-renders multiple times per second due to liveStats updates,
+// which previously caused the complex SVG generation in this component to unnecessarily recalculate.
+const Heatmap = React.memo(function Heatmap({ stats }) {
   const [heatmapMode, setHeatmapMode] = useState('frequency'); // 'frequency' or 'latency'
   
   const keyMetrics = stats.keyMetrics || {};
@@ -350,4 +353,6 @@ export default function Heatmap({ stats }) {
       </div>
     </div>
   );
-}
+});
+
+export default Heatmap;
