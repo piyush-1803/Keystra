@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 
 const EMPTY_ARRAY = [];
 
-export default function Dashboard({ stats, liveStats, onNavigate }) {
+const Dashboard = React.memo(function Dashboard({ stats, liveStats, onNavigate }) {
   const sessions = stats.sessions || EMPTY_ARRAY;
   
   // Calculate total keys typed today
@@ -385,4 +385,6 @@ export default function Dashboard({ stats, liveStats, onNavigate }) {
       </div>
     </div>
   );
-}
+});
+
+export default Dashboard;
