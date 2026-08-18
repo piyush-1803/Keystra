@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 
-export default function Heatmap({ stats }) {
+// ⚡ Bolt Optimization:
+// Wrapped Heatmap component in React.memo() to prevent unnecessary re-renders.
+// The parent App component updates liveStats frequently (multiple times per second),
+// but Heatmap only depends on the static `stats` prop. This optimization
+// prevents heavy data aggregations and list sorting from blocking the main thread.
+export default React.memo(function Heatmap({ stats }) {
   const [heatmapMode, setHeatmapMode] = useState('frequency'); // 'frequency' or 'latency'
   
   const keyMetrics = stats.keyMetrics || {};
@@ -350,4 +355,4 @@ export default function Heatmap({ stats }) {
       </div>
     </div>
   );
-}
+});
