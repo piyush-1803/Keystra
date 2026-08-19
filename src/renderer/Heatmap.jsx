@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 
-export default function Heatmap({ stats }) {
+// Wrap Heatmap in React.memo to prevent expensive re-computations and UI blocking
+// when the parent (App) re-renders due to high-frequency liveStats updates.
+export default React.memo(function Heatmap({ stats }) {
   const [heatmapMode, setHeatmapMode] = useState('frequency'); // 'frequency' or 'latency'
   
   const keyMetrics = stats.keyMetrics || {};
@@ -350,4 +352,4 @@ export default function Heatmap({ stats }) {
       </div>
     </div>
   );
-}
+});
