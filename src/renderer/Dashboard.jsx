@@ -6,7 +6,14 @@ export default function Dashboard({ stats, liveStats, onNavigate }) {
   const sessions = stats.sessions || EMPTY_ARRAY;
   
   // Calculate total keys typed today
-  const todayStr = new Date().toISOString().split('T')[0];
+  // ⚡ Bolt Optimization:
+  // Memoized todayStr using useMemo to prevent instantiating new Date() objects
+  // and performing string allocations on every render. Because liveStats causes this component
+  // to re-render very frequently, this avoids blocking the main thread.
+  // Using Math.floor(Date.now() / 86400000) (number of UTC days since epoch)
+  // as the dependency ensures the date correctly updates at UTC midnight.
+  const utcDay = Math.floor(Date.now() / 86400000);
+  const todayStr = useMemo(() => new Date().toISOString().split('T')[0], [utcDay]);
 
   const { todaySessions, todayKeysCount, maxSpeed, maxVolume, recentSessions } = useMemo(() => {
     const tSessions = sessions.filter(s => new Date(s.start_time).toISOString().split('T')[0] === todayStr);
