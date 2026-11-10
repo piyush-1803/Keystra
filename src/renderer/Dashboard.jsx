@@ -2,61 +2,61 @@ import React, { useMemo } from 'react';
 
 const EMPTY_ARRAY = [];
 
-export default function Dashboard({ stats, liveStats, onNavigate }) {
+// Helper functions that don't depend on component state
+const formatKeysCount = (count) => {
+  if (count >= 1000) {
+    return (count / 1000).toFixed(1) + 'k';
+  }
+  return count.toString();
+};
+
+const getAppIcon = (category) => {
+  switch (category) {
+    case 'Coding': return 'code';
+    case 'Chatting': return 'forum';
+    case 'Writing': return 'edit_note';
+    case 'Browsing': return 'language';
+    default: return 'widgets';
+  }
+};
+
+const getCategoryColor = (category) => {
+  switch (category) {
+    case 'Coding': return 'bg-primary/20 text-primary';
+    case 'Chatting': return 'bg-[#5865F2]/20 text-[#5865F2]';
+    case 'Writing': return 'bg-tertiary/20 text-tertiary';
+    case 'Browsing': return 'bg-secondary/20 text-secondary';
+    default: return 'bg-surface-variant text-outline';
+  }
+};
+
+// ⚡ Bolt Optimization:
+// DashboardContent is wrapped in React.memo() to prevent it from re-rendering
+// when the parent Dashboard receives high-frequency updates to liveStats.
+// It encapsulates the heavy, static DOM parts and stats logic.
+const DashboardContent = React.memo(function DashboardContent({ stats, onNavigate, todayKeysCount }) {
   const sessions = stats.sessions || EMPTY_ARRAY;
   
   // Calculate total keys typed today
-  const todayStr = new Date().toISOString().split('T')[0];
+  // Memoize date dependency for long-running sessions, avoiding new Date() allocation
+  const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
 
-  const { todaySessions, todayKeysCount, maxSpeed, maxVolume, recentSessions } = useMemo(() => {
+  const { todaySessions, maxSpeed, maxVolume, recentSessions } = useMemo(() => {
     const tSessions = sessions.filter(s => new Date(s.start_time).toISOString().split('T')[0] === todayStr);
-    const keysCount = tSessions.reduce((acc, s) => acc + s.keystroke_count, 0);
     const mSpeed = sessions.reduce((max, s) => s.avg_wpm > max ? s.avg_wpm : max, 0);
     const mVolume = Object.values(stats.streaks?.dailyKeys || {}).reduce((max, val) => val > max ? val : max, 0);
     const rSessions = [...sessions].reverse().slice(0, 3);
 
     return {
       todaySessions: tSessions,
-      todayKeysCount: keysCount,
       maxSpeed: mSpeed,
       maxVolume: mVolume,
       recentSessions: rSessions
     };
   }, [sessions, stats.streaks?.dailyKeys, todayStr]);
-  
-  // Format keys typed today (e.g., 42.8k)
-  const formatKeysCount = (count) => {
-    if (count >= 1000) {
-      return (count / 1000).toFixed(1) + 'k';
-    }
-    return count.toString();
-  };
 
-  // Daily goal calculation (10k keys)
   const dailyGoal = 10000;
   const goalProgress = Math.min(100, Math.round((todayKeysCount / dailyGoal) * 100));
-
-  // Determine standard app icons
-  const getAppIcon = (category) => {
-    switch (category) {
-      case 'Coding': return 'code';
-      case 'Chatting': return 'forum';
-      case 'Writing': return 'edit_note';
-      case 'Browsing': return 'language';
-      default: return 'widgets';
-    }
-  };
-
-  // Get color theme classes based on category
-  const getCategoryColor = (category) => {
-    switch (category) {
-      case 'Coding': return 'bg-primary/20 text-primary';
-      case 'Chatting': return 'bg-[#5865F2]/20 text-[#5865F2]';
-      case 'Writing': return 'bg-tertiary/20 text-tertiary';
-      case 'Browsing': return 'bg-secondary/20 text-secondary';
-      default: return 'bg-surface-variant text-outline';
-    }
-  };
 
   const dayItems = useMemo(() => {
     const last5Days = Array.from({ length: 5 }).map((_, idx) => {
@@ -114,92 +114,7 @@ export default function Dashboard({ stats, liveStats, onNavigate }) {
   }, [todaySessions]);
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 bg-surface-dim relative overflow-hidden">
-      {/* Top Navbar Header */}
-      <header className="flex justify-between items-center px-8 h-16 w-full border-b border-white/10 bg-surface/70 backdrop-blur-xl z-20">
-        <div className="flex items-center gap-8">
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline text-[18px]">search</span>
-            <input
-              type="text"
-              readOnly
-              className="bg-surface-variant/30 border-none rounded-full pl-10 pr-4 py-1.5 text-body-sm w-64 focus:ring-1 focus:ring-primary cursor-pointer"
-              placeholder="Press Ctrl+K for commands..."
-              onClick={() => {
-                // If dashboard is clicked, open standard command menu mock if implemented
-              }}
-            />
-          </div>
-          <nav className="hidden md:flex gap-6">
-            <button className="text-primary border-b-2 border-primary pb-1 font-body-lg text-body-sm font-semibold">Overview</button>
-            <button onClick={() => onNavigate('analytics')} className="text-on-surface-variant hover:text-primary font-body-lg text-body-sm font-medium transition-colors">History</button>
-          </nav>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 px-3 py-1 bg-surface-container-high rounded-full">
-            <span className="material-symbols-outlined text-[14px] text-secondary">lock</span>
-            <span className="text-label-xs text-on-surface-variant uppercase tracking-tighter">Local-only</span>
-          </div>
-        </div>
-      </header>
-
-      {/* Scrollable Main Content Canvas */}
-      <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-        {/* Metrics Row */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          {/* Live Speed */}
-          <div className="glass-card p-6 rounded-2xl relative overflow-hidden group">
-            <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-colors"></div>
-            <p className="text-label-xs text-outline-variant uppercase mb-2">Live Speed</p>
-            <div className="flex items-baseline gap-2">
-              <span className="font-display-metrics text-[48px] font-bold text-primary text-glow font-display">
-                {liveStats.currentWpm || (sessions.length > 0 ? sessions[sessions.length - 1].avg_wpm : 0)}
-              </span>
-              <span className="text-body-lg text-outline">WPM</span>
-            </div>
-            <div className="flex items-center gap-1 mt-2">
-              <span className="material-symbols-outlined text-secondary text-[16px]">trending_up</span>
-              <span className="text-label-xs text-secondary">
-                {liveStats.category !== 'Other' ? `${liveStats.category} Mode Active` : 'Monitoring inputs...'}
-              </span>
-            </div>
-          </div>
-
-          {/* Accuracy */}
-          <div className="glass-card p-6 rounded-2xl">
-            <p className="text-label-xs text-outline-variant uppercase mb-2">Accuracy</p>
-            <div className="flex items-baseline gap-2">
-              <span className="font-display-metrics text-[48px] font-bold text-on-surface font-display">{liveStats.accuracy}</span>
-              <span className="text-body-lg text-outline">%</span>
-            </div>
-            <div className="w-full bg-surface-variant h-1.5 rounded-full mt-4">
-              <div className="bg-secondary h-full rounded-full transition-all duration-500" style={{ width: `${liveStats.accuracy}%` }}></div>
-            </div>
-          </div>
-
-          {/* Active Session */}
-          <div className="glass-card p-6 rounded-2xl">
-            <p className="text-label-xs text-outline-variant uppercase mb-2">Active Session</p>
-            <div className="flex items-baseline gap-2">
-              <span className="font-display-metrics text-[48px] font-bold text-on-surface font-display">{liveStats.sessionTimeStr}</span>
-              <span className="text-body-lg text-outline">MIN</span>
-            </div>
-            <p className="text-label-xs text-outline mt-2 italic font-medium">Focus mode active</p>
-          </div>
-
-          {/* Today's Keys */}
-          <div className="glass-card p-6 rounded-2xl">
-            <p className="text-label-xs text-outline-variant uppercase mb-2">Today's Keys</p>
-            <div className="flex items-baseline gap-2">
-              <span className="font-display-metrics text-[48px] font-bold text-on-surface font-display">{formatKeysCount(todayKeysCount)}</span>
-            </div>
-            <div className="flex items-center gap-1 mt-2">
-              <span className="material-symbols-outlined text-tertiary text-[16px]">bolt</span>
-              <span className="text-label-xs text-tertiary">Goal: {formatKeysCount(dailyGoal)} keys</span>
-            </div>
-          </div>
-        </div>
-
+    <>
         {/* Core Bento Grid Sections */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Main Chart Section */}
@@ -368,6 +283,115 @@ export default function Dashboard({ stats, liveStats, onNavigate }) {
             </div>
           </div>
         </div>
+    </>
+  );
+});
+
+export default function Dashboard({ stats, liveStats, onNavigate }) {
+  const sessions = stats.sessions || EMPTY_ARRAY;
+
+  // Calculate total keys typed today
+  // Memoize using floor of date/ms instead of allocating new Date() with empty dep array
+  // We use this only for things derived in Dashboard itself (like todayKeysCount)
+  // that need to be computed fast.
+  const todayStr = useMemo(() => new Date().toISOString().split('T')[0], [Math.floor(Date.now() / 86400000)]);
+
+  const todayKeysCount = useMemo(() => {
+    const tSessions = sessions.filter(s => new Date(s.start_time).toISOString().split('T')[0] === todayStr);
+    return tSessions.reduce((acc, s) => acc + s.keystroke_count, 0);
+  }, [sessions, todayStr]);
+
+  const dailyGoal = 10000;
+
+  return (
+    <div className="flex-1 flex flex-col min-w-0 bg-surface-dim relative overflow-hidden">
+      {/* Top Navbar Header */}
+      <header className="flex justify-between items-center px-8 h-16 w-full border-b border-white/10 bg-surface/70 backdrop-blur-xl z-20">
+        <div className="flex items-center gap-8">
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline text-[18px]">search</span>
+            <input
+              type="text"
+              readOnly
+              className="bg-surface-variant/30 border-none rounded-full pl-10 pr-4 py-1.5 text-body-sm w-64 focus:ring-1 focus:ring-primary cursor-pointer"
+              placeholder="Press Ctrl+K for commands..."
+              onClick={() => {
+                // If dashboard is clicked, open standard command menu mock if implemented
+              }}
+            />
+          </div>
+          <nav className="hidden md:flex gap-6">
+            <button className="text-primary border-b-2 border-primary pb-1 font-body-lg text-body-sm font-semibold">Overview</button>
+            <button onClick={() => onNavigate('analytics')} className="text-on-surface-variant hover:text-primary font-body-lg text-body-sm font-medium transition-colors">History</button>
+          </nav>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 px-3 py-1 bg-surface-container-high rounded-full">
+            <span className="material-symbols-outlined text-[14px] text-secondary">lock</span>
+            <span className="text-label-xs text-on-surface-variant uppercase tracking-tighter">Local-only</span>
+          </div>
+        </div>
+      </header>
+
+      {/* Scrollable Main Content Canvas */}
+      <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+        {/* Metrics Row - These re-render frequently! */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          {/* Live Speed */}
+          <div className="glass-card p-6 rounded-2xl relative overflow-hidden group">
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-colors"></div>
+            <p className="text-label-xs text-outline-variant uppercase mb-2">Live Speed</p>
+            <div className="flex items-baseline gap-2">
+              <span className="font-display-metrics text-[48px] font-bold text-primary text-glow font-display">
+                {liveStats.currentWpm || (sessions.length > 0 ? sessions[sessions.length - 1].avg_wpm : 0)}
+              </span>
+              <span className="text-body-lg text-outline">WPM</span>
+            </div>
+            <div className="flex items-center gap-1 mt-2">
+              <span className="material-symbols-outlined text-secondary text-[16px]">trending_up</span>
+              <span className="text-label-xs text-secondary">
+                {liveStats.category !== 'Other' ? `${liveStats.category} Mode Active` : 'Monitoring inputs...'}
+              </span>
+            </div>
+          </div>
+
+          {/* Accuracy */}
+          <div className="glass-card p-6 rounded-2xl">
+            <p className="text-label-xs text-outline-variant uppercase mb-2">Accuracy</p>
+            <div className="flex items-baseline gap-2">
+              <span className="font-display-metrics text-[48px] font-bold text-on-surface font-display">{liveStats.accuracy}</span>
+              <span className="text-body-lg text-outline">%</span>
+            </div>
+            <div className="w-full bg-surface-variant h-1.5 rounded-full mt-4">
+              <div className="bg-secondary h-full rounded-full transition-all duration-500" style={{ width: `${liveStats.accuracy}%` }}></div>
+            </div>
+          </div>
+
+          {/* Active Session */}
+          <div className="glass-card p-6 rounded-2xl">
+            <p className="text-label-xs text-outline-variant uppercase mb-2">Active Session</p>
+            <div className="flex items-baseline gap-2">
+              <span className="font-display-metrics text-[48px] font-bold text-on-surface font-display">{liveStats.sessionTimeStr}</span>
+              <span className="text-body-lg text-outline">MIN</span>
+            </div>
+            <p className="text-label-xs text-outline mt-2 italic font-medium">Focus mode active</p>
+          </div>
+
+          {/* Today's Keys - Kept outside memo for simplicity since todayKeysCount is lightweight */}
+          <div className="glass-card p-6 rounded-2xl">
+            <p className="text-label-xs text-outline-variant uppercase mb-2">Today's Keys</p>
+            <div className="flex items-baseline gap-2">
+              <span className="font-display-metrics text-[48px] font-bold text-on-surface font-display">{formatKeysCount(todayKeysCount)}</span>
+            </div>
+            <div className="flex items-center gap-1 mt-2">
+              <span className="material-symbols-outlined text-tertiary text-[16px]">bolt</span>
+              <span className="text-label-xs text-tertiary">Goal: {formatKeysCount(dailyGoal)} keys</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Memoized Heavy Content - Avoids re-rendering on liveStats updates */}
+        <DashboardContent stats={stats} onNavigate={onNavigate} todayKeysCount={todayKeysCount} />
       </div>
 
       {/* Floating Command Bar interaction hint */}
